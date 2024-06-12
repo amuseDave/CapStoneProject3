@@ -57,7 +57,7 @@ input[type="number"] {
 }
 
 .anime-container {
-  height: 300px;
+  height: 340px;
 
   flex: 1;
   max-width: 700px;
@@ -71,6 +71,34 @@ input[type="number"] {
 }
 .anime-image {
   height: 100%;
+}
+
+.anime-add-remove {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  margin-top: 25px;
+  height: 40px;
+}
+.add-form,
+.do-not-add-form {
+  display: none;
+}
+
+.bttn {
+  position: relative;
+  width: 140px;
+  height: 40px;
+  margin: 0px 5px;
+  background-color: rgb(53, 53, 53);
+  cursor: pointer;
+}
+.icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /*
@@ -89,3 +117,6 @@ HEADER
   background-color: black;
   color: white;
 }
+/*
+HEADER
+*/

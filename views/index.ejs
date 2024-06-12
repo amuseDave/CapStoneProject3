@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="styles.css" />
     <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <script
+      src="https://kit.fontawesome.com/2a62b8eba4.js"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <%- include('partials/header.ejs') %>
@@ -23,6 +29,27 @@
         <% }}%>
       </div>
     </div>
+
+    <% if (locals.isGenerated === true){%>
+    <div class="anime-add-remove">
+      <div class="add-bttn bttn">
+        <i class="fa-solid fa-check fa-2xl icon" style="color: #63e6be"></i>
+      </div>
+      <div class="do-not-add-bttn bttn">
+        <i class="fa-solid fa-xmark fa-2xl icon" style="color: #f53232"></i>
+      </div>
+
+      <!--FORM-->
+      <form class="add-form" action="/add-anime" method="POST">
+        <input type="hidden" value="<%= animeId %>" name="animeId" />
+      </form>
+      <form class="do-not-add-form" action="/add-anime" method="POST">
+        <input type="hidden" value="false" name="animeId" />
+      </form>
+      <!--FORM-->
+    </div>
+
+    <% } else{%>
     <div class="input-box">
       <form class="anime-form" action="/my-anime-list" method="POST">
         <input
@@ -37,5 +64,16 @@
         <input class="id-submit" type="submit" />
       </form>
     </div>
+    <%}%>
+    <script>
+      $(document).ready(() => {
+        $(".add-bttn").click(() => {
+          $(".add-form").submit();
+        });
+        $(".do-not-add-bttn").click(() => {
+          $(".do-not-add-form").submit();
+        });
+      });
+    </script>
   </body>
 </html>

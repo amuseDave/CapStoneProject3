@@ -31,24 +31,22 @@ let currentUserId = 1;
 //////GET REQUEST
 app.get("/", async (req, res) => {
   try {
+    console.log(isGenerated);
     const result = await db.query(
       "SELECT anime_list.id, anime_id, user_id FROM anime_list JOIN users ON users.id = user_id WHERE user_id = $1",
       [currentUserId]
     );
-    if (isGenerated) {
-      console.log(existingPicture);
-      console.log(existingTrailer);
-      console.log(existingLink);
-      console.log(existingDescription);
-      console.log(existingTitles);
-      isGenerated = false;
+    if (isGenerated === true) {
       res.render("index.ejs", {
         picture: existingPicture,
         trailer: existingTrailer,
         url: existingLink,
         description: existingDescription,
         title: existingTitles,
+        animeId: currentAnimeId,
+        isGenerated: isGenerated,
       });
+      isGenerated = false;
     } else {
       res.render("index.ejs");
     }
@@ -61,7 +59,6 @@ app.get("/", async (req, res) => {
 // post request to get value/ID then send HTTP request to get anime via API with specific ID
 app.post("/my-anime-list", async (req, res) => {
   currentAnimeId = parseInt(req.body.animeInput);
-  let imagesArray = [];
   let existingTitlesFiltered = [];
   let titles = [];
   let info = [];
@@ -93,6 +90,10 @@ app.post("/my-anime-list", async (req, res) => {
     console.log("Error doesn't exist");
     res.redirect("/");
   }
+});
+
+app.post("/add-anime", (req, res) => {
+  console.log(req.body);
 });
 
 // RUN THE SERVER
