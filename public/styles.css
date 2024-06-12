@@ -1,7 +1,9 @@
+@import url("https://fonts.googleapis.com/css2?family=Varela+Round&display=swap");
 * {
   margin: 0;
   padding: 0;
   background-color: rgb(61, 61, 61);
+  font-family: "Varela Round", sans-serif;
 }
 body {
   padding-top: 100px;
@@ -69,4 +71,21 @@ input[type="number"] {
 }
 .anime-image {
   height: 100%;
+}
+
+/*
+HEADER
+*/
+.header {
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 40px;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.6rem;
+  background-color: black;
+  color: white;
 }
