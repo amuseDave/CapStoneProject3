@@ -26,33 +26,47 @@ let existingTrailer;
 let existingDescription;
 let existingTitles;
 let existingLink;
+let users = [];
+let currentUserId = false;
 
-let currentUserId = 1;
 //////GET REQUEST
 app.get("/", async (req, res) => {
-  try {
-    console.log(isGenerated);
-    const result = await db.query(
-      "SELECT anime_list.id, anime_id, user_id FROM anime_list JOIN users ON users.id = user_id WHERE user_id = $1",
-      [currentUserId]
-    );
-    if (isGenerated === true) {
-      res.render("index.ejs", {
-        picture: existingPicture,
-        trailer: existingTrailer,
-        url: existingLink,
-        description: existingDescription,
-        title: existingTitles,
-        animeId: currentAnimeId,
-        isGenerated: isGenerated,
-      });
-      isGenerated = false;
-    } else {
-      res.render("index.ejs");
+  // server starting with false user id
+  // CREATE OR LOGIN
+  if (currentUserId === false) {
+    const result = await db.query("SELECT id, username FROM users");
+    users = result.rows;
+    console.log(`CHECKS IF USERS EXISTS TO LOOP FOR MATCH`);
+    console.log(users);
+    res.render("index.ejs", {
+      userId: currentUserId,
+    });
+  } else if (currentUserId !== false) {
+    try {
+      console.log(isGenerated);
+      const result = await db.query(
+        "SELECT anime_id, user_id FROM anime_list JOIN users ON users.id = user_id WHERE user_id = $1",
+        [currentUserId]
+      );
+      if (isGenerated === true) {
+        res.render("index.ejs", {
+          picture: existingPicture,
+          trailer: existingTrailer,
+          url: existingLink,
+          description: existingDescription,
+          title: existingTitles,
+          animeId: currentAnimeId,
+          isGenerated: isGenerated,
+        });
+        isGenerated = false;
+      } else {
+        console.log(result.rows);
+        res.render("index.ejs");
+      }
+    } catch (err) {
+      console.log(err);
+      res.redirect("/");
     }
-  } catch (err) {
-    console.log(err);
-    res.redirect("/");
   }
 });
 
@@ -92,8 +106,55 @@ app.post("/my-anime-list", async (req, res) => {
   }
 });
 
-app.post("/add-anime", (req, res) => {
+app.post("/add-anime", async (req, res) => {
+  if (req.body.animeId === "false") {
+    res.render("/");
+  } else {
+    await db.query(
+      "INSER INTO anime_list (anime_id, user_id) VALUES ($1, $2)",
+      [currentAnimeId, currentUserId]
+    );
+  }
   console.log(req.body);
+});
+
+app.post("/username", async (req, res) => {
+  try {
+    const username = req.body.username.toLowerCase();
+    const password = req.body.password;
+    const userExist = await users.find((user) => user.username === username);
+    if (userExist === undefined) {
+      console.log("CREATE ACCOUNT IF USERNAME DOESN'T EXIST");
+      const id = await db.query(
+        "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
+        [username, password]
+      );
+      currentUserId = parseInt(id.rows[0].id);
+    } else {
+      console.log("CHECK FOR PASS");
+      console.log(password);
+      console.log(username);
+      const result = await db.query(
+        "SELECT id FROM users WHERE password = $1 AND username = $2",
+        [password, username]
+      );
+
+      const checkId = result.rows;
+      console.log(checkId.length);
+      if (checkId.length < 1) {
+        console.log("WRONG PASSWORD");
+        error = "Password you've entered for this username is incorrect";
+      } else {
+        console.log("GOOD PASSWORD");
+        currentUserId = userExist.id;
+        console.log(currentUserId);
+      }
+    }
+    res.redirect("/");
+  } catch (err) {
+    console.log(err);
+  }
+  //currentUserId;
 });
 
 // RUN THE SERVER

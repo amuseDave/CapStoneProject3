@@ -101,6 +101,48 @@ input[type="number"] {
   transform: translateX(-50%);
 }
 
+.username-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.username-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  flex: 1;
+}
+
+.enter-username {
+  margin: 0;
+  height: 30px;
+  font-size: 1.1rem;
+  padding: 4px;
+  border: none;
+  background-color: rgb(243, 245, 146);
+  cursor: pointer;
+}
+.type-username-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 320px;
+  margin: 0px 80px;
+}
+.type-username {
+  width: 100%;
+  height: 20px;
+  border: 1px solid rgb(0, 0, 0);
+  margin: 10px;
+  border-radius: 50px;
+  padding: 5px 15px;
+  font-size: 1.3rem;
+  color: rgb(255, 255, 167);
+  background-color: rgb(44, 44, 44);
+  text-align: center;
+}
 /*
 HEADER
 */
