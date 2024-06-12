@@ -3,3 +3,70 @@
   padding: 0;
   background-color: rgb(61, 61, 61);
 }
+body {
+  padding-top: 100px;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.input-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.anime-list-gen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.anime-form {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  max-width: 700px;
+}
+
+.id-input {
+  flex: 1;
+  max-width: 200px;
+  height: 32px;
+  font-size: 1.3rem;
+  padding: 5px;
+  border: 1px solid black;
+}
+
+.id-submit {
+  height: 44px;
+  margin-left: 5px;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.anime-container {
+  height: 300px;
+
+  flex: 1;
+  max-width: 700px;
+  display: flex;
+  justify-content: center;
+  margin: 0px 50px;
+}
+.embed-anime-video {
+  width: 100%;
+  height: 100%;
+}
+.anime-image {
+  height: 100%;
+}

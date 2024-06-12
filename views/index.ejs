@@ -6,5 +6,35 @@
     <link rel="stylesheet" href="styles.css" />
     <title>Document</title>
   </head>
-  <body></body>
+  <body>
+    <div class="anime-list-gen">
+      <% if (locals.title){%>
+      <div class="anime-container">
+        <% if (locals.trailer !== null) {%>
+        <iframe
+          class="embed-anime-video"
+          src="<%= trailer %>"
+          frameborder="0"
+          autoplay
+        ></iframe>
+        <% }else if (locals.picture){ %>
+        <img class="anime-image" src="<%=picture.large_image_url%>" alt="" />
+        <% }}%>
+      </div>
+    </div>
+    <div class="input-box">
+      <form class="anime-form" action="/my-anime-list" method="POST">
+        <input
+          class="id-input"
+          min="1"
+          max="58000"
+          required
+          type="number"
+          placeholder="Enter Anime ID"
+          name="animeInput"
+        />
+        <input class="id-submit" type="submit" />
+      </form>
+    </div>
+  </body>
 </html>
