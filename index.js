@@ -59,8 +59,8 @@ app.get("/", async (req, res) => {
     try {
       // 3 step
       // Get their data with user id
-      console.log("Checks if anime is generated for saving:");
-      console.log(isGenerated);
+      console.log("Checks if anime is generated for saving:", isGenerated);
+
       const result = await db.query(
         "SELECT anime_id FROM anime_list JOIN users ON users.id = user_id WHERE user_id = $1 ORDER BY anime_list.id DESC",
         [currentUserId]
@@ -71,8 +71,8 @@ app.get("/", async (req, res) => {
         filteringAnime.push(row.anime_id);
       });
       animeList = filteringAnime;
-      console.log("CURRENT USER ANIME LIST IDs");
-      console.log(animeList);
+      console.log("CURRENT USER ANIME LIST IDs:", animeList);
+
       //
       //FILTERING FULL DATA LIST ANIME OF CURRENT USER
       //3.5 GET THEIR ANIME LIST
@@ -106,11 +106,8 @@ app.get("/", async (req, res) => {
       }
 
       // Now filteringAnimeData contains all the fetched data
-      console.log("FILTERRED ANIME LIST FOR DISPLAYING");
-      console.log(filteringAnimeData2);
       //
       //
-
       // 4-5 step if it is generated display it
       // and + their anime list
       if (isGenerated === true) {
@@ -127,15 +124,12 @@ app.get("/", async (req, res) => {
           error: error,
         });
         isGenerated = false;
-        console.log("FILTERRED ANIME LIST FOR DISPLAYING");
-        console.log(filteringAnimeData2);
+
         error = "";
       }
       // 4-5 step if it is not generated
       // display their current anime list only
       else {
-        console.log("FILTERRED ANIME LIST FOR DISPLAYING");
-        console.log(filteringAnimeData2);
         res.render("index.ejs", {
           favAnimes: filteringAnimeData2,
           user: currentUser,
@@ -249,7 +243,25 @@ app.post("/username", async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-  //currentUserId;
+});
+
+app.post("/delete", async (req, res) => {
+  //DELETING ANIME ID FROM DATABASE AND FFONT END/BACK END
+  const animeDelId = parseInt(req.body.animeId);
+
+  const findIndexAnimeListId = animeList.findIndex((id) => id === animeDelId);
+  const findIndexAnimeList = filteringAnimeData2.findIndex(
+    (anime) => anime.animeID === animeDelId
+  );
+
+  console.log("UPDATE DATA/ FRONT AND BACK END FOR DELETING");
+  animeList.splice(findIndexAnimeListId, 1);
+  filteringAnimeData2.splice(findIndexAnimeList, 1);
+  await db.query(
+    "DELETE FROM anime_list WHERE anime_list.anime_id = $1 AND user_id = $2",
+    [animeDelId, currentUserId]
+  );
+  res.redirect("/");
 });
 
 // RUN THE SERVER

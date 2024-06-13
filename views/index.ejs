@@ -102,24 +102,128 @@
     <%}%> <% if(locals.favAnimes){%>
 
     <div class="anime-row2">
-      <h1>✨</h1>
-      <div class="anime-col2">
-        <h1><span class="current-user"><%= user %></span><br />LIST</h1>
+      <div class="anime-row3">
+        <h1>✨</h1>
+        <div class="anime-col2">
+          <h1><span class="current-user"><%= user %></span><br />LIST</h1>
+        </div>
+        <h1>✨</h1>
       </div>
-      <h1>✨</h1>
     </div>
     <% favAnimes.forEach((anime) => {%>
     <div class="anime-row">
       <div class="anime-col">
         <h1 class="anime-ttl"><%= anime.title %></h1>
-        <img class="anime-image2" src="<%= anime.image %>" alt="" />
-        <a class="more-info" target="_blank" href="<%= anime.link %>">
-          More Info</a
-        >
+        <div class="anime-img-box">
+          <img class="anime-image2" src="<%= anime.image %>" alt="" />
+          <form class="delete" action="/delete" method="POST">
+            <input type="hidden" name="animeId" value="<%= anime.animeID %>" />
+            <i
+              class="fa-solid fa-xmark fa-2xl icon2"
+              style="color: #f53232"
+            ></i>
+            <input type="submit" class="hidden-input" />
+          </form>
+          <a class="more-info" target="_blank" href="<%= anime.link %>">
+            More Info</a
+          >
+        </div>
       </div>
     </div>
 
-    <%})} %>
+    <%})} %> <%if ( locals.userId !== false){%>
+    <section class="side-section">
+      <h2>Popular Anime IDs</h2>
+      <br />
+      <hr />
+      <h4 class="anime-ids">
+        <span class="anime-id-list">52588</span><br />Kaiju No.8
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">54900</span><br />Wind Breaker
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">53516</span><br />7th Prince
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">56690</span><br />RE:Monster
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">21</span><br />One Piece
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">12031</span><br />Kingdom
+        <hr />
+      </h4>
+
+      <h4>
+        <span class="anime-id-list">33</span>
+        <br />
+        Berserk
+      </h4>
+      <hr />
+      <h4>
+        <span class="anime-id-list">1535</span>
+        <br />
+        Death Note
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">40748</span>
+        <br />
+        JuJuTsu Kaisen
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">44511</span>
+        <br />
+        ChainSaw Man
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">32182</span>
+        <br />
+        Mob Psycho 100
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">30276</span>
+        <br />
+        One Punch
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">36649</span>
+        <br />
+        Banana Fish
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">38000</span>
+        <br />
+        Demon Slayer
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">37520</span>
+        <br />
+        Dororo
+        <hr />
+      </h4>
+      <h4>
+        <span class="anime-id-list">34572</span>
+        <br />
+        Black Clover
+        <hr />
+      </h4>
+    </section>
+
+    <%}%>
 
     <script>
       $(document).ready(() => {
