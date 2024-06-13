@@ -30,6 +30,8 @@ let users = [];
 let currentUserId = false;
 let animeList;
 let currentUser = [];
+let filteringAnimeData2 = [];
+let firstRequest = 0;
 
 //////GET REQUEST
 app.get("/", async (req, res) => {
@@ -76,32 +78,36 @@ app.get("/", async (req, res) => {
       //3.5 GET THEIR ANIME LIST
       console.log("Getting their anime list");
 
-      const filteringAnimeData = await Promise.all(
-        animeList.map(async (favAnimeId) => {
-          const response = await axios.get(
-            `https://api.jikan.moe/v4/anime/${favAnimeId}/full`
-          );
-          const animeData = response.data.data;
-          const animeLink = animeData.url;
-          const animeTitles = animeData.titles;
-          const animePicture = animeData.images.jpg.large_image_url;
-          const animeTitle = animeTitles.find(
-            (title) => title.type === "Default"
-          );
+      if (firstRequest === 0) {
+        const filteringAnimeData = await Promise.all(
+          animeList.map(async (favAnimeId) => {
+            const response = await axios.get(
+              `https://api.jikan.moe/v4/anime/${favAnimeId}/full`
+            );
+            const animeData = response.data.data;
+            const animeLink = animeData.url;
+            const animeTitles = animeData.titles;
+            const animePicture = animeData.images.jpg.large_image_url;
+            const animeTitle = animeTitles.find(
+              (title) => title.type === "Default"
+            );
 
-          return {
-            userID: currentUserId,
-            animeID: favAnimeId,
-            title: animeTitle.title,
-            link: animeLink,
-            image: animePicture,
-          };
-        })
-      );
+            return {
+              userID: currentUserId,
+              animeID: favAnimeId,
+              title: animeTitle.title,
+              link: animeLink,
+              image: animePicture,
+            };
+          })
+        );
+        firstRequest++;
+        filteringAnimeData2 = filteringAnimeData;
+      }
 
       // Now filteringAnimeData contains all the fetched data
       console.log("FILTERRED ANIME LIST FOR DISPLAYING");
-      console.log(filteringAnimeData);
+      console.log(filteringAnimeData2);
       //
       //
 
@@ -116,24 +122,26 @@ app.get("/", async (req, res) => {
           title: existingTitles,
           animeId: currentAnimeId,
           isGenerated: isGenerated,
-          favAnimes: filteringAnimeData,
+          favAnimes: filteringAnimeData2,
           user: currentUser,
           error: error,
         });
         isGenerated = false;
         console.log("FILTERRED ANIME LIST FOR DISPLAYING");
-        console.log(filteringAnimeData);
+        console.log(filteringAnimeData2);
+        error = "";
       }
       // 4-5 step if it is not generated
       // display their current anime list only
       else {
         console.log("FILTERRED ANIME LIST FOR DISPLAYING");
-        console.log(filteringAnimeData);
+        console.log(filteringAnimeData2);
         res.render("index.ejs", {
-          favAnimes: filteringAnimeData,
+          favAnimes: filteringAnimeData2,
           user: currentUser,
           error: error,
         });
+        error = "";
       }
     } catch (err) {
       console.log(err);
@@ -182,6 +190,23 @@ app.post("/add-anime", async (req, res) => {
       "INSERT INTO anime_list (anime_id, user_id) VALUES ($1, $2)",
       [currentAnimeId, currentUserId]
     );
+    const response = await axios.get(
+      `https://api.jikan.moe/v4/anime/${currentAnimeId}/full`
+    );
+    const animeData = response.data.data;
+    const animeLink = animeData.url;
+    const animeTitles = animeData.titles;
+    const animePicture = animeData.images.jpg.large_image_url;
+    const animeTitle = animeTitles.find((title) => title.type === "Default");
+
+    filteringAnimeData2.push({
+      userID: currentUserId,
+      animeID: currentAnimeId,
+      title: animeTitle.title,
+      link: animeLink,
+      image: animePicture,
+    });
+
     res.redirect("/");
   }
 });
