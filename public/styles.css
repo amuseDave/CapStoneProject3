@@ -6,7 +6,7 @@
   font-family: "Varela Round", sans-serif;
 }
 body {
-  padding-top: 100px;
+  padding: 100px 150px 0px 300px;
 }
 
 input[type="number"]::-webkit-outer-spin-button,
@@ -141,6 +141,49 @@ input[type="number"] {
   font-size: 1.3rem;
   color: rgb(255, 255, 167);
   background-color: rgb(44, 44, 44);
+  text-align: center;
+}
+.vid-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.video {
+  flex: 1;
+  max-width: 600px;
+}
+
+.anime-row {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  margin: 30px 0px;
+  color: yellow;
+}
+
+.anime-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  max-width: 600px;
+}
+.anime-image {
+  width: 100%;
+}
+.current-user {
+  color: white;
+  text-shadow: 0px 0px 1px white;
+}
+.anime-row2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
   text-align: center;
 }
 /*

@@ -28,11 +28,15 @@ let existingTitles;
 let existingLink;
 let users = [];
 let currentUserId = false;
+let animeList;
+let currentUser = [];
 
 //////GET REQUEST
 app.get("/", async (req, res) => {
-  // server starting with false user id
-  // CREATE OR LOGIN
+  //1 step
+  // Server starting with false user id
+  // CREATE ACC OR LOGIN
+  //
   if (currentUserId === false) {
     const result = await db.query("SELECT id, username FROM users");
     users = result.rows;
@@ -40,14 +44,69 @@ app.get("/", async (req, res) => {
     console.log(users);
     res.render("index.ejs", {
       userId: currentUserId,
+      error: error,
     });
-  } else if (currentUserId !== false) {
+    error = "";
+  }
+  // 2 step
+  // USER LOGGED IN AND SET THEIR CURRENT ID
+  // ID CAN ACCESS THEIR DATA
+  //
+  else if (currentUserId !== false) {
+    const filteringAnime = [];
     try {
+      // 3 step
+      // Get their data with user id
+      console.log("Checks if anime is generated for saving:");
       console.log(isGenerated);
       const result = await db.query(
-        "SELECT anime_id, user_id FROM anime_list JOIN users ON users.id = user_id WHERE user_id = $1",
+        "SELECT anime_id FROM anime_list JOIN users ON users.id = user_id WHERE user_id = $1 ORDER BY anime_list.id DESC",
         [currentUserId]
       );
+      //FILTERING CURRENT USER ANIME
+      //
+      result.rows.forEach((row) => {
+        filteringAnime.push(row.anime_id);
+      });
+      animeList = filteringAnime;
+      console.log("CURRENT USER ANIME LIST IDs");
+      console.log(animeList);
+      //
+      //FILTERING FULL DATA LIST ANIME OF CURRENT USER
+      //3.5 GET THEIR ANIME LIST
+      console.log("Getting their anime list");
+
+      const filteringAnimeData = await Promise.all(
+        animeList.map(async (favAnimeId) => {
+          const response = await axios.get(
+            `https://api.jikan.moe/v4/anime/${favAnimeId}/full`
+          );
+          const animeData = response.data.data;
+          const animeLink = animeData.url;
+          const animeTitles = animeData.titles;
+          const animePicture = animeData.images.jpg.large_image_url;
+          const animeTitle = animeTitles.find(
+            (title) => title.type === "Default"
+          );
+
+          return {
+            userID: currentUserId,
+            animeID: favAnimeId,
+            title: animeTitle.title,
+            link: animeLink,
+            image: animePicture,
+          };
+        })
+      );
+
+      // Now filteringAnimeData contains all the fetched data
+      console.log("FILTERRED ANIME LIST FOR DISPLAYING");
+      console.log(filteringAnimeData);
+      //
+      //
+
+      // 4-5 step if it is generated display it
+      // and + their anime list
       if (isGenerated === true) {
         res.render("index.ejs", {
           picture: existingPicture,
@@ -57,11 +116,24 @@ app.get("/", async (req, res) => {
           title: existingTitles,
           animeId: currentAnimeId,
           isGenerated: isGenerated,
+          favAnimes: filteringAnimeData,
+          user: currentUser,
+          error: error,
         });
         isGenerated = false;
-      } else {
-        console.log(result.rows);
-        res.render("index.ejs");
+        console.log("FILTERRED ANIME LIST FOR DISPLAYING");
+        console.log(filteringAnimeData);
+      }
+      // 4-5 step if it is not generated
+      // display their current anime list only
+      else {
+        console.log("FILTERRED ANIME LIST FOR DISPLAYING");
+        console.log(filteringAnimeData);
+        res.render("index.ejs", {
+          favAnimes: filteringAnimeData,
+          user: currentUser,
+          error: error,
+        });
       }
     } catch (err) {
       console.log(err);
@@ -70,7 +142,7 @@ app.get("/", async (req, res) => {
   }
 });
 
-// post request to get value/ID then send HTTP request to get anime via API with specific ID
+// post request to get value/ID of anime and display to add or no
 app.post("/my-anime-list", async (req, res) => {
   currentAnimeId = parseInt(req.body.animeInput);
   let existingTitlesFiltered = [];
@@ -80,10 +152,6 @@ app.post("/my-anime-list", async (req, res) => {
     const response = await axios.get(
       `https://api.jikan.moe/v4/anime/${currentAnimeId}/full`
     );
-    const response1 = await axios.get(
-      `https://api.jikan.moe/v4/anime/${currentAnimeId}/pictures`
-    );
-
     existingAnime = response.data.data;
     existingTrailer = existingAnime.trailer.embed_url;
     existingDescription = existingAnime.synopsis;
@@ -99,28 +167,29 @@ app.post("/my-anime-list", async (req, res) => {
     isGenerated = true;
     res.redirect("/");
   } catch (err) {
-    error = `The anime with id ${currentAnimeId} does not exist`;
+    error = `The anime with id ${currentAnimeId} does not exist, OR RECEIVED TOO MANY REQUEST`;
     console.log(error);
-    console.log("Error doesn't exist");
+    isGenerated = false;
     res.redirect("/");
   }
 });
 
 app.post("/add-anime", async (req, res) => {
   if (req.body.animeId === "false") {
-    res.render("/");
+    res.redirect("/");
   } else {
     await db.query(
-      "INSER INTO anime_list (anime_id, user_id) VALUES ($1, $2)",
+      "INSERT INTO anime_list (anime_id, user_id) VALUES ($1, $2)",
       [currentAnimeId, currentUserId]
     );
+    res.redirect("/");
   }
-  console.log(req.body);
 });
 
 app.post("/username", async (req, res) => {
   try {
     const username = req.body.username.toLowerCase();
+    currentUser = req.body.username;
     const password = req.body.password;
     const userExist = await users.find((user) => user.username === username);
     if (userExist === undefined) {
@@ -147,6 +216,7 @@ app.post("/username", async (req, res) => {
       } else {
         console.log("GOOD PASSWORD");
         currentUserId = userExist.id;
+        console.log("CURRENT USER ID");
         console.log(currentUserId);
       }
     }

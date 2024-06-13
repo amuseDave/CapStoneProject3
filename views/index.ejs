@@ -13,6 +13,10 @@
     ></script>
   </head>
   <body>
+    <% if (locals.error) {%>
+    <p style="text-align: center"><%= error %></p>
+    <% } %>
+    <!---->
     <%- include('partials/header.ejs') %>
     <div class="anime-list-gen">
       <% if (locals.title){%>
@@ -78,6 +82,9 @@
     </div>
 
     <% } else if (locals.isGenerated !== true && locals.userId !== false){%>
+    <div class="vid-container">
+      <video autoplay controls class="video" src="Tutorial.mp4"></video>
+    </div>
     <div class="input-box">
       <form class="anime-form" action="/my-anime-list" method="POST">
         <input
@@ -92,7 +99,28 @@
         <input class="id-submit" type="submit" />
       </form>
     </div>
-    <%}%>
+    <%}%> <% if(locals.favAnimes){%>
+
+    <div class="anime-row2">
+      <h1>✨</h1>
+      <div class="anime-col2">
+        <h1><span class="current-user"><%= user %></span><br />LIST</h1>
+      </div>
+      <h1>✨</h1>
+    </div>
+    <% favAnimes.forEach((anime) => {%>
+    <div class="anime-row">
+      <div class="anime-col">
+        <h1 class="anime-ttl"><%= anime.title %></h1>
+        <img class="anime-image2" src="<%= anime.image %>" alt="" />
+        <a class="more-info" target="_blank" href="<%= anime.link %>">
+          More Info</a
+        >
+      </div>
+    </div>
+
+    <%})} %>
+
     <script>
       $(document).ready(() => {
         $(".add-bttn").click(() => {
